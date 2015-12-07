@@ -1,5 +1,6 @@
 from setuptools import setup, Extension
 import sys
+import platform
 
 hessio_prefix=None
 
@@ -8,6 +9,7 @@ if any("hessio_prefix" in s for s in sys.argv):
   hessio_prefix = [s for s in sys.argv if 'hessio_prefix' in s][0]
   sys.argv.remove(hessio_prefix)
   hessio_prefix = hessio_prefix.split('=')[1]
+
 
   pyhessio_module = Extension(
       'pyhessio.pyhessioc',
@@ -18,6 +20,8 @@ if any("hessio_prefix" in s for s in sys.argv):
       runtime_library_dirs=[hessio_prefix],
       define_macros=[('CTA', None), ('CTA_MAX_SC', None)]
   )
+  if platform.system() == 'Darwin':
+    pyhessio_module.extra_link_args.append('-Wl,-rpath,'+hessio_prefix)
 
 # else standars installation
 else:
